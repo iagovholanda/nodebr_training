@@ -37,11 +37,49 @@ class Database {
     const resultado = await this.escreverArquivo(heroiFinal)
   }
 
-  /* Listando dados de um id expecfico. */
+  /* Listando dados de um id especifico. */
   async listar(id) {
     const dados = await this.dadosArquivo()
     const dadosFiltrados = dados.filter(item => (id ? (item.id === id): true))
     return dadosFiltrados
+  }
+
+  /* Remover um heroi de um id especifico. */
+  async remover(id) {
+    if(!id) {
+      return await this.escreverArquivo([])
+    }
+    /* Obter dados do arquivo. */
+    const dados = await this.dadosArquivo()
+    const indice = dados.findIndex( item => item.id === parseInt(id))
+
+    if(indice === -1) {
+      throw Error('Usuário informado não existe.')
+    }
+
+    dados.splice(indice, 1)
+    return await this.escreverArquivo(dados) 
+  }
+
+  /* Atualzar um heroi de um id especifico. */
+  async atualizar(id, alteracoes) {
+    const dados = await this.dadosArquivo()
+    const indice = dados.findIndex(item => item.id === parseInt(id))
+
+    if(indice === -1){
+      throw Error('Heroi informado não existe')
+    }
+
+    const atual = dados[indice]
+    const objetoAtualizar = {
+      ...atual,
+      ...alteracoes
+    }
+    dados.splice(indice, 1)
+    return await this.escreverArquivo([
+      ...dados,
+      objetoAtualizar
+    ])
   }
 }
 
